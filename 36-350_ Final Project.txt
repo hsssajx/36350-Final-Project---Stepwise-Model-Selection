@@ -1,0 +1,64 @@
+Dear John, Kathy, and Linda:
+
+Your project assignment is Backwards Stepwise Model Selection.  The project description on the class webpage has a high level overview.  Here is some more specific guidance.
+
+You will need to write several functions that can do the following:
+
+1. 
+Given an input (n by p) matrix X and (n by 1) vector Y fit a sequence of linear models including different subsets of columns of X and an intercept term by least squares.
+
+Start by fitting the full model using the least squares method.  This is step 1:
+
+Y = b0 + b1 X1 + b2 X2 + ... + bp Xp
+
+Least squares gives b0, b1, b2, ..., bp that minimize the residual mean squared error (MSE):
+
+Average of [Y - (b0 + b1 X1 + b2 X2 + ... + bp Xp)]^2 across all n observations.  (An observation is a row of X and corresponding entry of Y.)
+
+Now fit each of the p possible models obtained by removing a single variable, e.g.
+
+Y = b0 + b2 X2 + ... + bp Xp
+Y = b0 + b1 X2 + b3 X3 + ... + bp Xp
+...
+Y = b0 + b1 X2 + b3 X3 + ... + b{p-1} X{p-1}
+
+Compute the residual sum of squares for each of those models and pick the model that has the lowest MSE.
+This is the model at step 2.  It has an intercept and p coefficients --- the coefficient of the variable that is not present is implicitly 0. Now repeat by considering the p-1 models obtained by removing a single variable.
+
+At each step k you will have a fitted model b0 and (b1, ..., bp) where (k-1) of the coefficients are zero,
+and a corresponding RSS for that fitted model.  As you progress the MSE should increase.  Eventually, after p steps, you will reach the NULL model at the p+1th step:
+
+Y = b0
+
+consisting of only an intercept.
+
+Your function should return these (p+1) different fitted models, their MSEs, and corresponding indices of active variables (variables whose coefficient is nonzero).
+
+You should use the lm.fit() or lm() functions.
+
+
+2.
+Your goal here is to choose the best of the (p+1) models that you found in (1) by estimating how well those different models can predict new data.  If you just use the MSE from part 1, you will always pick the biggest model.  This is not a good idea. The MSE measure in part 1 is actually a  bad indicator of how well these models will perform on new data, because you used the same data was used to calculate the coefficients (the b1,b2,b3,...) and the MSE.
+
+What you can do instead is to use "simulate" having new data by using cross-validation.  Specifically, you can use leave-1-out cross-validation (which is just like the jackknife that you have already learned about).  Here's the idea.
+
+Suppose you want to estimate the MSE of a model using variables X1, X5, and X6 on new data.
+Divide your data into two parts:
+
+Training data (consisting of n-1 observations)
+Testing data (consisting of 1 observation)
+
+a) Fit a model on the training data using only an intercept and variables X1, X5, and X6.
+b) Calculate its MSE on the testing data (actually it would just be a squared error since there is only 1 observation here).
+c) Repeat this for all n possible partitions of your data.
+d) Average the n MSEs to get a "cross-validation" estimation of the predictive MSE.
+
+Now do this for all (p+1) models from part 1.
+
+3.
+Given an input X and Y. Fit a sequence of models in the stepwise manner described above.  Estimate their predictive MSE by cross-validation. Return as output a best model according to the cross-validation.
+
+
+You can generate your own test data using the rnorm() and matrix() functions.  I will provide you will some additional data later.
+
+-vqv
