@@ -25,11 +25,22 @@ mean.squared.error = function(input.matrix, fitted.model){
 #Input: The full original matrix of observations, the vector containing all of the linear models
 #Output: The MSE of each model calculated by the leave-one-out method
 cross.validate = function(original.matrix, linear.models){
+	cross.validation.estimates = data.frame()
+	#Assuming that linear models is a data frame, IDplaceholder
+	cross.validation.estimates = ddply(linear.models, .(IDplaceholder), leave.one.out(full.matrix))
+
+	return(cross.validation.estimates)
 }
 
 #Inputs: Matrix of observations, the linear model to be tested
 #Output: Average of the n MSEs 
-leave.one.out = function(input.matrix, input.model){
+leave.one.out = function(input.model, full.matrix){
+	model.mses = vector()
+	for(i in 1:nrow(full.matrix)){
+		test.matrix = full.matrix[-i,]
+		model.mses[i] = mean.squared.error(input.matrix = test.matrix, fitted.model = input.model)
+	}
+	return(mean(model.mses))
 }
 
 #Like the cross.validate function except instead of returning the MSE of each model it just returns the single best model
